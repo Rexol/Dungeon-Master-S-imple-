@@ -3,19 +3,21 @@
  * Author: Vladimir Surtaev
  * date: 28.01.2022
  * 
- * TODO: add stat view with name
- * TODO: add cancel button
- * TODO_DONE: mark visited rooms
- * TODO: GOD name easter egg
- * TODO: formating
+ * TODO: add comments
+ * TODO: add test for map
  * TODO: Cannot change the room if there are enemies
- * TODO: add rewards from kills
- * TODO: room full of corps
+ * TODO: cancel separate function
+ * 
+ * TODO_DONE: room full of corps
+ * TODO_DONE: add cancel button
+ * TODO_DONE: mark visited rooms
+ * TODO_DONE: add stat view with name
+ * TODO_DONE50%: formating
  */
 
 const chalk = require('chalk');
 const prompts = require('prompts');
-const { Player } = require('./characters');
+const { Player, Mob } = require('./characters');
 const { Room } = require('./rooms');
 
 class Game {
@@ -54,14 +56,17 @@ class Game {
     async changeRoom() {
         let initialRoomChoices = new Array();
         if (this.user.room.explored){
-            initialRoomChoices = this.user.room.doors.map((room) => ({title: room.name, value: room}));
+            initialRoomChoices = this.user.room.doors.map((room) => ({
+                title: room.visited ? chalk.hex('#ffa500')(room.name) : chalk.green(room.name + ' (new)'), 
+                value: room
+            }));
         } else if (!this.user.room.parent) { 
             process.stdout.write("You can't see any doors - try to look around\n");
             return;
         } else {
             initialRoomChoices = [{title: `Return to the ${this.user.room.parent.name}`, value: this.user.room.parent}];
         }
-        initialRoomChoices = initialRoomChoices.concat([{title: 'Cancel', value: 'cancel'}]);
+        initialRoomChoices = initialRoomChoices.concat([{title: chalk.red('Cancel'), value: 'cancel'}] );
 
         const response = await prompts({
             type: 'select',
@@ -72,7 +77,15 @@ class Game {
 
         if (response.value == 'cancel' || !(response.value instanceof Room)){
             process.stdout.cursorTo(0);
-            process.stdout.moveCursor();
+            process.stdout.moveCursor(0, -3);
+            process.stdout.clearScreenDown();
+            return;
+        }
+
+        if (!response.value.visited && this.user.room.mobs.length > 0) {
+            process.stdout.write(`  There is a ${this.user.room.mobs[0].name} on your way\n`);
+            process.stdout.write(`  You can't go to the new rooms\n`);
+            return;
         }
 
         response.value.parent = this.user.room;
@@ -86,10 +99,15 @@ class Game {
 
     async lookAround(){
         process.stdout.write(`You are inside a ${this.user.room.name}\n`);
+        
         if (this.user.room.doors.length > 1) {
             process.stdout.write(`There are doors to the:\n`);
             this.user.room.doors.map((room) => {
-                process.stdout.write(`  ${room.visited ? chalk.hex('#ffa500')(room.name) : chalk.green(room.name + ' (new)')}\n`);
+                process.stdout.write(`  ${
+                    room.visited ?
+                    chalk.hex('#ffa500')(room.name) 
+                    : chalk.green(room.name + ' (new)')
+                }\n`);
             });
         } else  if (this.user.room.doors.length == 1 && !this.user.room.parent) {
             process.stdout.write(`There is a door to the :\n`);
@@ -104,7 +122,7 @@ class Game {
 
         process.stdout.write('\n');
         if (this.user.room.mobs.length === 0) {
-            process.stdout.write('Nobody is here except darkness. . . \n');
+            process.stdout.write(`Nobody is here except darkness${this.user.room.mobsPresent ? ' and bloody corps' : ''}. . . \n`);
         } else if (this.user.room.mobs.length == 1) {
             process.stdout.write(`There is ${this.user.room.mobs[0].name} in the ${this.user.room.name}\n`);
         } else {
@@ -121,6 +139,7 @@ class Game {
 
     async userAttacks(){
         let initialMobChoices = new Array();
+        
         if (this.user.room.explored || this.user.room.revealed) {
             initialMobChoices = this.user.room.mobs.map((mob) => ({title: `${mob.name} - ${chalk.bold.red(mob.hp)} hp`, value: mob}));
         } else {
@@ -135,23 +154,31 @@ class Game {
             return;
         }
 
+        initialMobChoices = initialMobChoices.concat([{title: chalk.red('Cancel'), value: 'cancel'}]);
+
         const response = await prompts({
             type: 'select',
             name: 'value',
             message: 'Choose the target:',
             choices: initialMobChoices
         });
+
+        if (response.value == 'cancel' || !(response.value instanceof Mob)){
+            process.stdout.cursorTo(0);
+            process.stdout.moveCursor(0, -3);
+            process.stdout.clearScreenDown();
+            return;
+        }
         
         process.stdout.write(`You are attacking the  ${response.value.name}\n`);
-        
         let val = this.user.attack();
 
         if (val === 0) {
             process.stdout.write(`  You missed\n`);
-        }
-        else {
+        } else {
             process.stdout.write(`  You hited the ${response.value.name} on ${chalk.red(val)} points\n`);
             response.value.getDamage(val);
+            
             if (!response.value.alive) {
                 process.stdout.write(`  You killed the ${response.value.name}\n`);
                 if (!this.user.kills.hasOwnProperty(response.value.name)) {
@@ -166,16 +193,18 @@ class Game {
     }
 
     async mobsAttacks(){
-        process.stdout.write('\n');
+        //process.stdout.write('\n');
         this.user.room.revealed = true;
 
         this.user.room.mobs.map((mob) => {
-            process.stdout.write(`You're ${chalk.underline.bold('being attacked')} by ${mob.name}\n`);
+            process.stdout.write(`\nYou're ${chalk.underline.bold('being attacked')} by ${mob.name}\n`);
             let val = mob.attack();
+            
             if (val == 0) {
                 process.stdout.write('  You dodged\n');
             } else {
                 this.user.getDamage(val);
+                
                 if (this.user.alive) {
                     process.stdout.write(`  You lost ${val} hp (your hp - ${chalk.red.bold(this.user.hp)})\n`);
                 } else {

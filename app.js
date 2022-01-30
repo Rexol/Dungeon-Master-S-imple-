@@ -7,8 +7,7 @@
 const chalk = require('chalk');
 const prompts = require('prompts');
 const { Game } = require('./game');
-const { spawn, NUMBER_OF_ROOMS } = require('./map');
-
+const { spawn, TARGET_ROOM_ID, defaultUName } = require('./map');
 
 async function getName() {
     const name = await prompts({
@@ -16,12 +15,15 @@ async function getName() {
         name: 'value',
         message: `Who are you, traveler?`
     });
+
+    if (name.value == '') return defaultUName;
+
     return name.value;
 }
 
 async function gameLoop(game) {
     process.stdout.write('\n');
-    
+
     const initialActionChoices = [
         { title: 'Look around', value: 'look' },
         { title: 'Go to ...', value: 'goToRoom' },
@@ -45,7 +47,7 @@ async function gameLoop(game) {
 
         case 'goToRoom':
             await game.changeRoom();
-            process.stdout.write('\n');
+            //process.stdout.write('\n');
             break;
 
         case 'attack':
@@ -69,13 +71,13 @@ async function gameLoop(game) {
 }
 
 process.stdout.write('\033c'); // clear screen on windows
-
+//console.log(spawn);
 process.stdout.write('WELCOME TO THE DUNGEONS OF LORD OBJECT ORIENTUS!\n');
 process.stdout.write('================================================\n');
 
 async function start() {
     const name = await getName();
-    const game = new Game(name, spawn, NUMBER_OF_ROOMS);
+    const game = new Game(name, spawn, TARGET_ROOM_ID);
 
     process.stdout.write('You walk down the stairs to the dungeons\n')
     gameLoop(game);

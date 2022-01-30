@@ -42,16 +42,22 @@ class Player extends character {
     }
 }
 
-class SewerRat extends character {
+class Mob extends character {
+    constructor(healthPoint, damagePoint, attackChance, name) {
+        super(healthPoint, damagePoint, attackChance, name);
+    }
+}
+
+class SewerRat extends Mob {
     constructor() {
         super(2, 1, 0.5, "Sewer Rat");
     }
 }
 
-class GiantDragon extends character {
+class GiantDragon extends Mob {
     constructor() {
         super(4, 8, 0.9, "Giant Dragon");
     }
 }
 
-module.exports = { Player, SewerRat, GiantDragon };
+module.exports = { Player, Mob, SewerRat, GiantDragon };

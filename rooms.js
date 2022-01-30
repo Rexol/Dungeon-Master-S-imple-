@@ -3,20 +3,23 @@
  * Author: Vladimir Surtaev
  * Date: 28.01.2022
  */
+
+
 class Room {
     constructor(id, name, mobs) {
-        this.name = name;
+        this.name = name || 'Coridor';
         this.id = id;
 
         this.doors = new Array();
-        this.parent = null; // room where player came from and where he can return back
+        this.parent = null; // Room where player came from.
 
         this.mobs = mobs || new Array();
-        this.mobsPresent = this.mobs.length > 0;
+        this.mobsPresent = this.mobs.length > 0; // Indicates whether mobs were in the room.
         
         this.visited = false;
-        this.explored = false;
-        this.revealed = false;
+        this.explored = false; // Used "Look Around" in that room.
+        this.revealed = false; // Mobs attacked before player used "Look Around".
+        this.tested = false; // For map testing purpuses.
     }
     
     addDoor (room) {
@@ -28,6 +31,9 @@ class Room {
         this.mobs.push(mob);
     }
 
+    /**
+     * This function removes dead mobs from the room.
+     */
     clearMobs() {
         this.mobs = this.mobs.filter((mob) => mob.alive);
     }
