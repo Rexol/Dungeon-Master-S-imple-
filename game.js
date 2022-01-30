@@ -4,14 +4,14 @@
  * date: 28.01.2022
  * 
  * TODO: add comments
- * TODO: add test for map
- * TODO: Cannot change the room if there are enemies
- * TODO: cancel separate function
  * 
+ * TODO_DONE: cancel separate function
+ * TODO_DONE: Cannot change the room if there are enemies
  * TODO_DONE: room full of corps
  * TODO_DONE: add cancel button
  * TODO_DONE: mark visited rooms
  * TODO_DONE: add stat view with name
+ * TODO_DONE: add test for map
  * TODO_DONE50%: formating
  */
 
@@ -24,13 +24,6 @@ class Game {
     constructor(username, map, target) {
         this.target = target;
         this.user = new Player(map, username);
-    }
-
-    checkTarget() {
-        if (this.user.room.id == this.target) {
-            process.stdout.write("Congratulations, you have successfully reached the portal\n");
-            this.finishGame(true);
-        }
     }
 
     async stats() {
@@ -76,9 +69,7 @@ class Game {
         });
 
         if (response.value == 'cancel' || !(response.value instanceof Room)){
-            process.stdout.cursorTo(0);
-            process.stdout.moveCursor(0, -3);
-            process.stdout.clearScreenDown();
+            this.cancel();
             return;
         }
 
@@ -164,9 +155,7 @@ class Game {
         });
 
         if (response.value == 'cancel' || !(response.value instanceof Mob)){
-            process.stdout.cursorTo(0);
-            process.stdout.moveCursor(0, -3);
-            process.stdout.clearScreenDown();
+            this.cancel();
             return;
         }
         
@@ -213,6 +202,19 @@ class Game {
                 }
             }
         });
+    }
+
+    checkTarget() {
+        if (this.user.room.id == this.target) {
+            process.stdout.write("Congratulations, you have successfully reached the portal\n");
+            this.finishGame(true);
+        }
+    }
+
+    cancel() {
+        process.stdout.cursorTo(0);
+        process.stdout.moveCursor(0, -3);
+        process.stdout.clearScreenDown();
     }
     
     finishGame(res) {
