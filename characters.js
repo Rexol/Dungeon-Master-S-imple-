@@ -30,6 +30,10 @@ class character {
     }
 }
 
+/**
+ * Class for the user's character.
+ * Can be extended to have inventory, other points.
+ */
 class Player extends character {
     constructor(room, name = "user") {
         super(10, 2, 0.75, name);
@@ -42,12 +46,19 @@ class Player extends character {
     }
 }
 
+/**
+ * Class for the enemy characters.
+ * At the moment does nothing but can be used to add
+ * some new features to enemies separatly from user.
+ */
 class Mob extends character {
     constructor(healthPoint, damagePoint, attackChance, name) {
         super(healthPoint, damagePoint, attackChance, name);
     }
 }
-
+/**
+ * Default game enemies.
+ */
 class SewerRat extends Mob {
     constructor() {
         super(2, 1, 0.5, "Sewer Rat");
