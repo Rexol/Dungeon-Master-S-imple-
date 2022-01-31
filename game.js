@@ -175,7 +175,7 @@ class Game {
       room.doors.map((room) => {
         process.stdout.write(`  ${chalk.green(room.name + " (new)")}\n`);
       });
-    } else if (room.id == 1 && room.parent) {
+    } else if (room.id == 0 && room.parent) {
       process.stdout.write(`What are you doing at the entrance again?\n`);
       process.stdout.write(`No a step back, traveler, only forward!!!\n`);
     } else {
