@@ -12,11 +12,11 @@ const chalk = require("chalk");
 /**
  * CONSTANTS FOR MAP CONFIGURATION
  */
-const NUMBER_OF_ROOMS = 4; // Total number of rooms.
-const TARGET_ROOM_ID = 3; // Indexing starts from 0.
-const NAMES = ["Dungeon Entrance", "Hallway", "Chamber", "Portal"]; // Names for room respectively.
-const CONNECTIONS = { 0: [1], 1: [2], 2: [3] }; // key - parent room id, value - array of child room id's.
-const MOBS = { 1: [new SewerRat()], 2: [new GiantDragon()] }; // key - room id, value - array of mobs.
+const NUMBER_OF_ROOMS = 5; // Total number of rooms.
+const TARGET_ROOM_ID = 4; // Indexing starts from 0.
+const NAMES = ["Dungeon Entrance", "Hallway", "Chamber","Crematorium", "Portal"]; // Names for room respectively.
+const CONNECTIONS = { 0: [1], 1: [2, 3], 3: [4], 2: [4] }; // key - parent room id, value - array of child room id's.
+const MOBS = { 1: [new SewerRat(), new SewerRat()], 2: [new GiantDragon()], 3:[new SewerRat()] }; // key - room id, value - array of mobs.
 
 // ----- DON'T CHANGE CODE BELOW THIS LINE -----
 
@@ -563,8 +563,11 @@ module.exports = { spawn, TARGET_ROOM_ID };
 
 
 
+let dvr = new Room(-1, "", []);
+dvr.visited = true;
+spawn.addDoor(dvr);
+dvr.addDoor(spawn);
 
-
-let defaultUName = "\n\n                                                  \n                       &@@@@@@@@@@@@@&            \n    AMOGUS            @@@@@@@@@@@@@@@@@&          \n                     @@@@  *%%@@@@% &@@@@         \n                    @@@@ **/%%%%%%%% @@@@@        \n                   &@@@@@&@       %&@@@@@@@       \n                   @@@@@@@@@@@@@@@@@@@@@@@@       \n                  @@@@@@@@@@@@@@@@@@@@@@@@@%      \n                  @@@@@@@@@@@@@@@@@@@@@@@@@&      \n                 &@@@@@@@@@@@@@@@@@@@@@@@@@@      \n                 @@@@@@@@@@@@@@@@@@@@@@@@@@@      \n                @@@@@@@@@@@@@@@@@@@@@@@@@@@@      \n                @@@@@@@@@@@@@@@@@@@@@@@@@@@@      \n               @@@@@@@&          &@@@@@@@@@@      \n               @@@@@@@            @@@@@@@@@@      \n        @@@@@ @@@@@@@@            @@@@@@@@@@      \n      &@@@@@@@@@@@@@@%            @@@@@@@@@@      \n            ..(.             @@@@@@@@@@@@@@@      \n                            @@@@@@@@@@@@@&        \n                                                  ";
+let defaultUName = "\n                                                  \n                       &@@@@@@@@@@@@@&            \n    AMOGUS            @@@@@@@@@@@@@@@@@&          \n                     @@@@  *%%@@@@% &@@@@         \n                    @@@@ **/%%%%%%%% @@@@@        \n                   &@@@@@&@       %&@@@@@@@       \n                   @@@@@@@@@@@@@@@@@@@@@@@@       \n                  @@@@@@@@@@@@@@@@@@@@@@@@@%      \n                  @@@@@@@@@@@@@@@@@@@@@@@@@&      \n                 &@@@@@@@@@@@@@@@@@@@@@@@@@@      \n                 @@@@@@@@@@@@@@@@@@@@@@@@@@@      \n                @@@@@@@@@@@@@@@@@@@@@@@@@@@@      \n                @@@@@@@@@@@@@@@@@@@@@@@@@@@@      \n               @@@@@@@&          &@@@@@@@@@@      \n               @@@@@@@            @@@@@@@@@@      \n        @@@@@ @@@@@@@@            @@@@@@@@@@      \n      &@@@@@@@@@@@@@@%            @@@@@@@@@@      \n            ..(.             @@@@@@@@@@@@@@@      \n                            @@@@@@@@@@@@@&        \n                                                  ";
 
 module.exports = { spawn, TARGET_ROOM_ID, defaultUName };

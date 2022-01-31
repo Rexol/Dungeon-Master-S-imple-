@@ -6,7 +6,7 @@
 
 class Room {
   constructor(id, name, mobs) {
-    this.name = name || "Coridor";
+    this.name = name || 'Coridor';
     this.id = id;
 
     this.doors = new Array();
