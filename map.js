@@ -12,14 +12,23 @@ const chalk = require("chalk");
 /**
  * CONSTANTS FOR MAP CONFIGURATION
  */
-const NUMBER_OF_ROOMS = 5; // Total number of rooms.
-const TARGET_ROOM_ID = 4; // Indexing starts from 0.
-const NAMES = ["Dungeon Entrance", "Hallway", "Chamber","Crematorium", "Portal"]; // Names for room respectively.
-const CONNECTIONS = { 0: [1], 1: [2, 3], 3: [4], 2: [4] }; // key - parent room id, value - array of child room id's.
-const MOBS = { 1: [new SewerRat(), new SewerRat()], 2: [new GiantDragon()], 3:[new SewerRat()] }; // key - room id, value - array of mobs.
+const NUMBER_OF_ROOMS = 4; // Total number of rooms.
+const TARGET_ROOM_ID = 3; // Indexing starts from 0.
+const NAMES = ["Dungeon Entrance", "Hallway", "Chamber", "Portal"]; // Names for rooms respectively.
+const CONNECTIONS = { 0: [1], 1: [2], 2: [3] }; // key - parent room id, value - array of child room id's.
+const MOBS = { 1: [new SewerRat()], 2: [new GiantDragon()] }; // key - room id, value - array of mobs.
 
 // ----- DON'T CHANGE CODE BELOW THIS LINE -----
 
+/**
+ * Generate map according to the instructions.
+ * 
+ * @param {Number} numberOfRooms 
+ * @param {Array} names : names for rooms respectively 
+ * @param {Object} connections : key - parent room id, value - array of child id's 
+ * @param {Object} mobs : key - room id, value - array of mobs
+ * @returns {Room} room with index 0
+ */
 function buildMap(numberOfRooms, names, connections, mobs) {
   let rooms = new Array(numberOfRooms);
   for (let i = 0; i < numberOfRooms; i++) {
@@ -40,6 +49,14 @@ function buildMap(numberOfRooms, names, connections, mobs) {
   return rooms[0];
 }
 
+/**
+ * Checks whether it's possible to get the target room from the spawn.
+ * Uses Breadth first search.
+ * 
+ * @param {Room} spawn 
+ * @param {Number} targetId 
+ * @returns 
+ */
 function mapBroken(spawn, targetId) {
   let q = new Array();
   q.push(spawn);
